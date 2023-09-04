@@ -1,105 +1,34 @@
 <script lang="ts">
-  import { Cell, Board } from "../lib/classes";
+  import { Game } from "../lib/classes";
 
-  function createBoard(type: "super" | "normal") {
-    const cells: Cell[][] = [];
-    for (let i = 0; i < 3; i++) {
-      const rowCells: Cell[] = [];
-      for (let j = 0; j < 3; j++) {
-        let cell;
-        if (type === "super") {
-          let board = createBoard("normal");
-          cell = new Cell(board);
-        } else {
-          cell = new Cell(null);
-        }
-        rowCells.push(cell);
-      }
-      cells.push(rowCells);
-    }
-    return new Board(cells);
-  }
-  let board = createBoard("super");
+  let game = new Game();
+
   let lastMove: number[] = [];
-
   function handleMove(i: number, j: number, k: number, l: number) {
-    if (!checkValidMove(i, j, k, l)) return;
-    board.turn % 2 === 0
-      ? board.cells[i][j].getCells()[k][l].setState("X")
-      : board.cells[i][j].getCells()[k][l].setState("O");
-    board.turn++;
-
-    board.cells[i][j].getBoard()?.checkEnd();
-    if (board.cells[i][j].getBoard()?.winner) {
-      let winner = board.cells[i][j].getBoard()?.winner;
-      if (winner === "O" || winner === "X") board.cells[i][j].setState(winner);
-    }
-    checkGameEnding();
-    if (board.winner === "X" || board.winner === "O") {
-      for (let i = 0; i < 3; i++) {
-        for (let j = 0; j < 3; j++) {
-          if (!board.cells[i][j].getPlayer())
-            board.cells[i][j].setState(board.winner);
-        }
-      }
-    }
-    lastMove = [i, j, k, l];
-    board = board; //Triggers update on state
-  }
-
-  function checkValidMove(i: number, j: number, k: number, l: number) {
-    let cell = board.cells[i][j].getCells()[k][l].getPlayer();
-    if (cell === "X" || cell === "O") return false;
-    //If last move's cell isn't current move's board,
-    //and last move's correspondant board isn't finished or has no winner, don't move
-    let lastk = lastMove[2] || 0;
-    let lastl = lastMove[3] || 0;
-    let currentBoard = board.cells[lastk][lastl];
-    if (
-      lastMove.length &&
-      (lastk != i || lastl != j) &&
-      !currentBoard.getPlayer() &&
-      !currentBoard.getBoard()?.finished
-    )
-      return false;
-    //If the selected board is already finished, don't move
-    if (board.cells[i][j].getBoard()?.finished) return false;
-    return true;
-  }
-
-  function checkGameEnding() {
-    board.checkEnd();
-    if (board.finished && !board.winner) {
-      let x = 0;
-      let o = 0;
-      for (let i = 0; i < 3; i++) {
-        for (let j = 0; j < 3; j++) {
-          if (board.cells[i][j].getBoard()?.winner === "O") o++;
-          if (board.cells[i][j].getBoard()?.winner === "X") x++;
-        }
-      }
-      o > x && board.setWinner("O");
-      x > o && board.setWinner("X");
-    }
-    board = board;
+    lastMove = game.handleMove(i, j, k, l, lastMove);
+    game = game;
   }
 </script>
 
 <main>
   <div class="super-board">
-    {#each board.cells as row, i}
+    {#each game.board.cells as row, i}
       {#each row as cell, j}
         <div
           class={`${
-            cell.getState() === "O" || cell.getState() === "X"
+            cell.state.winner === "O" || cell.state.winner === "X"
               ? "finished-board"
               : "board-container"
           } 
-          ${lastMove[2] === i && lastMove[3] === j ? "active" : ""}
+          ${
+            lastMove[2] === i && lastMove[3] === j && !cell.state.winner
+              ? "active"
+              : ""
+          }
           `}
         >
-          {#if cell.getState() === "X" || cell.getState() === "O"}
-            <div>{cell.getState()}</div>
+          {#if cell.state.winner === "X" || cell.state.winner === "O"}
+            <div class="finished-board-letter">{cell.state.winner}</div>
           {:else}
             {#each cell.getCells() as iRow, k}
               {#each iRow as iCell, l}
@@ -113,13 +42,16 @@
       {/each}
     {/each}
   </div>
-  <p>
-    {board.finished && board.winner
-      ? `Winner is ${board.winner}`
-      : board.finished
-      ? "DRAW"
-      : ""}
-  </p>
+  <div>
+    <p>Turn: {game.board.turn % 2 ? "O" : "X"}</p>
+    <p>
+      {game.board.finished && game.board.winner
+        ? `Winner is ${game.board.winner}`
+        : game.board.finished
+        ? "DRAW"
+        : ""}
+    </p>
+  </div>
 </main>
 
 <style>
@@ -150,6 +82,11 @@
     display: flex;
     align-items: center;
     justify-items: center;
+    font-size: 50px;
+  }
+  .finished-board-letter {
+    font-size: 120px;
+    font-weight: 100;
   }
 
   .cell {
