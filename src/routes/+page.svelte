@@ -21,7 +21,7 @@
               : "board-container"
           } 
           ${
-            lastMove[2] === i && lastMove[3] === j && !cell.state.winner
+            lastMove[2] === i && lastMove[3] === j && !cell.state.finished
               ? "active"
               : ""
           }
