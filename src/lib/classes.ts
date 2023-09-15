@@ -162,6 +162,7 @@ export class SuperBoard extends Board {
 
 export class Game {
   board: SuperBoard;
+  moves: number[][] = [];
   constructor() {
     this.board = this.#createSuperBoard();
   }
@@ -200,6 +201,7 @@ export class Game {
     this.#addMoveAndTurn(i, j, k, l);
     this.#checkBoardCompletion(i, j);
     this.#checkGameEnding();
+    this.moves.push([i, j, k, l]);
     return [i, j, k, l];
   }
 
@@ -265,5 +267,8 @@ export class Game {
         }
       }
     }
+  }
+  getMoves() {
+    return this.moves;
   }
 }
