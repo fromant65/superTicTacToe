@@ -1,6 +1,6 @@
 <script lang="ts">
-  export let player1 = { name: "x_X_Kati_X_x" };
-  export let player2 = { name: "fromant65" };
+  export let player1 = { name: "Player 1" };
+  export let player2 = { name: "Player 2" };
   export let turn: number;
   export let gameMoves: number[][];
   export let winner: string;
