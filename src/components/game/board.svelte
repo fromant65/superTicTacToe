@@ -3,6 +3,8 @@
   import GameInfo from "./gameInfo.svelte";
   let game = new Game();
   let gameMoves = game.getMoves();
+  $: turnParity = game.board.turn % 2;
+  $: winner = game.board.winner;
   let lastMove: number[] = [];
   function handleMove(i: number, j: number, k: number, l: number) {
     lastMove = game.handleMove(i, j, k, l, lastMove);
@@ -47,16 +49,7 @@
       {/each}
     {/each}
   </div>
-  <GameInfo turn={game.board.turn % 2} {gameMoves} />
-  <div>
-    <p>
-      {game.board.finished && game.board.winner
-        ? `Winner is ${game.board.winner}`
-        : game.board.finished
-        ? "DRAW"
-        : ""}
-    </p>
-  </div>
+  <GameInfo bind:turn={turnParity} {gameMoves} {winner} />
 </div>
 
 <style>
@@ -79,7 +72,6 @@
     gap: 2.5rem;
     align-items: center;
     justify-items: center;
-    border: 1px solid black;
     padding: 1.5rem;
   }
   .board-container {

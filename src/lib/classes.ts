@@ -1,8 +1,5 @@
 const fillerString = "";
 
-///OLD CLASSES
-
-///NEW CLASSES
 export class BoardCell {
   state: IndividualBoard;
   completedBoard: string = "";
@@ -262,8 +259,10 @@ export class Game {
     if (this.board.winner === "X" || this.board.winner === "O") {
       for (let i = 0; i < 3; i++) {
         for (let j = 0; j < 3; j++) {
-          if (!this.board.cells[i][j].getState().winner)
+          if (!this.board.cells[i][j].getState().winner) {
             this.board.cells[i][j].getState().setWinner(this.board.winner);
+            this.board.cells[i][j].getState().finished = true;
+          }
         }
       }
     }

@@ -5,10 +5,12 @@
 <div class="moves-table">
   {#each gameMoves as move, i}
     <div class="move">
-      <b>{i}:</b>
-      {#each move as cell, j}
-        {`${cell + 1} `}
-      {/each}
+      <b class="move-number">{i}</b>
+      <div class="move-coord">
+        {#each move as cell, j}
+          {`${cell + 1} `}
+        {/each}
+      </div>
     </div>
   {/each}
 </div>
@@ -21,9 +23,25 @@
     overflow: auto;
     border-top: 1px solid #ddd;
     border-bottom: 1px solid #ddd;
+    background-color: #eee;
   }
   .move:nth-child(2n) {
     background-color: #ddd;
+  }
+  .move:nth-child(2n + 1) {
+    background-color: #eee;
+  }
+  .move-coord {
+    display: inline-block;
+    padding: none;
+    padding: 0.25rem;
+  }
+  .move-number {
+    display: inline-block;
+    width: 1.2rem;
+    text-align: center;
+    padding: 0.25rem;
+    background-color: #ccc;
   }
 
   /* width */

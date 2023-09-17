@@ -1,25 +1,37 @@
 <script lang="ts">
-  export let player1 = "Player 1";
-  export let player2 = "Player 2";
+  export let player1 = { name: "x_X_Kati_X_x" };
+  export let player2 = { name: "fromant65" };
   export let turn: number;
   export let gameMoves: number[][];
+  export let winner: string;
+  import PlayerInfo from "./playerInfo.svelte";
   import GameMoves from "./gameMoves.svelte";
+
+  $: isFirstPlayerTurn = turn % 2 ? false : true;
+  $: isNotFirstPlayerTurn = !isFirstPlayerTurn;
+  $: isP1Winner = winner === "" ? null : winner === "X" ? true : false;
+  $: isP2Winner = winner === "" ? null : winner === "O" ? true : false;
 </script>
 
 <div class="game-info">
-  <div class={`${turn === 0 ? "turn" : "noturn"}`}>{player1}: X</div>
+  <PlayerInfo
+    player={player1}
+    bind:turn={isFirstPlayerTurn}
+    piece="X"
+    winner={isP1Winner}
+  />
   <GameMoves {gameMoves} />
-  <div class={`${turn === 1 ? "turn" : "noturn"}`}>{player2}: O</div>
+  <PlayerInfo
+    player={player2}
+    bind:turn={isNotFirstPlayerTurn}
+    piece="O"
+    winner={isP2Winner}
+  />
 </div>
 
 <style>
   .game-info {
-    padding: 1rem;
-  }
-  .noturn {
-    font-weight: normal;
-  }
-  .turn {
-    font-weight: bold;
+    margin: 1rem;
+    border: 1px solid #d4d4d4;
   }
 </style>
